@@ -1,0 +1,15 @@
+The focused pricing specifications are failing.
+
+Target: `src/Commerce.Pricing/PricingCalculator.cs`
+Authoritative contract: `docs/promotion-policy.md`
+Executable acceptance criteria: `tests/Commerce.Pricing.Specs/Program.cs`
+Ignore: `docs/stale-promotion-notes.md` because it is explicitly historical and rejected.
+
+First explain the mismatch between implementation and contract. Then make the smallest production-only change. Do not change the public signature, tests, project files, or dependencies.
+
+Verify with:
+1. `dotnet run --project tests/Commerce.Pricing.Specs`
+2. `dotnet build CommercePricing.slnx`
+3. Show the changed-file scope.
+
+Report: evidence used, root cause, files changed, and verification results.

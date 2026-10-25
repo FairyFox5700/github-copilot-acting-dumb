@@ -1,0 +1,31 @@
+name: Verify workshop
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Confirm intentional red baseline
+        working-directory: demo
+        run: |
+          chmod +x scripts/*.sh
+          ./scripts/reset-demo.sh
+          ./scripts/verify-baseline.sh
+      - name: Verify deterministic known fix
+        working-directory: demo
+        run: |
+          ./scripts/apply-known-fix.sh
+          ./scripts/verify-fixed.sh
+      - name: Restore baseline
+        working-directory: demo
+        run: |
+          ./scripts/reset-demo.sh
+          ./scripts/verify-baseline.sh

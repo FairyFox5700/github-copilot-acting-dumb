@@ -1,0 +1,4 @@
+**/bin/
+**/obj/
+demo/.git/
+*.zip
