@@ -1,1 +1,1 @@
-Fix the discount bug in `PricingCalculator.cs`.
+Fix the BEANS25 discount bug in `src/domain/discountPolicy.ts`.

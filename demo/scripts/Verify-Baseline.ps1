@@ -1,9 +1,10 @@
-$ErrorActionPreference = 'Continue'
-$Root = Split-Path -Parent $PSScriptRoot
-Push-Location $Root
-dotnet run --project tests/Commerce.Pricing.Specs
-$status = $LASTEXITCODE
-Pop-Location
-if ($status -eq 0) { throw 'Baseline unexpectedly passed.' }
-Write-Host 'EXPECTED RED: baseline exposes the pricing defect.'
-exit 0
+$ErrorActionPreference = 'Stop'
+$Demo = Split-Path $PSScriptRoot -Parent
+Push-Location $Demo
+try {
+    node "$PSScriptRoot/verify-baseline.mjs"
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+finally {
+    Pop-Location
+}

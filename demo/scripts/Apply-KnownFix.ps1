@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
-$Root = Split-Path -Parent $PSScriptRoot
-Copy-Item "$Root\scripts\fixtures\PricingCalculator.fixed.txt" "$Root\src\Commerce.Pricing\PricingCalculator.cs" -Force
-(Get-Item "$Root\src\Commerce.Pricing\PricingCalculator.cs").LastWriteTime = Get-Date
-Write-Host 'Known fix applied to PricingCalculator.cs.'
+$Demo = Split-Path $PSScriptRoot -Parent
+Copy-Item "$PSScriptRoot/fixtures/discountPolicy.fixed.ts" "$Demo/src/domain/discountPolicy.ts" -Force
+(Get-Item "$Demo/src/domain/discountPolicy.ts").LastWriteTime = Get-Date
+Write-Host 'KNOWN FIX APPLIED: promotion eligibility now belongs to the domain policy.'

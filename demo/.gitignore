@@ -1,7 +1,8 @@
-**/bin/
-**/obj/
-.vs/
+node_modules/
+dist/
+test-results/
+playwright-report/
+.baseline-results-*.json
 .vscode/
-.github/
-*.user
-*.suo
+/.github/
+*.log
