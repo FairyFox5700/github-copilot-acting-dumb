@@ -8,17 +8,26 @@ Participants will turn an ambiguous “fix the bug” request into a context pac
 
 ## Scenario
 
-A C# e-commerce promotion calculator looks plausible but violates three business rules:
+A real full-stack e-commerce slice—C# pricing domain, ASP.NET Core API, and React/Vite client—looks plausible but violates three business rules:
 
 - the SAVE20 discount is capped at EUR 50;
 - it cannot stack with a category discount;
 - final currency values use two-decimal, away-from-zero rounding.
 
-The repository also contains stale notes describing rejected behavior. The demo first gives Copilot a weak prompt, then provides engineered context and durable repository instructions.
+The repository also contains stale notes describing rejected behavior. The demo first gives Copilot a weak prompt, then provides engineered context and durable repository instructions. The browser makes the broken contract visible while domain specs, API integration tests, and React tests provide a verification ladder.
+
+```mermaid
+flowchart LR
+    React[React + Vite] -->|POST /api/pricing/quote| API[ASP.NET Core API]
+    API --> Pricing[C# pricing domain]
+    Policy[Promotion policy] -. authority .-> Pricing
+    Tests[Domain + API + UI tests] -. proof .-> Pricing
+```
 
 ## Requirements
 
 - .NET SDK 10
+- Node.js 24+
 - Git
 - VS Code with GitHub Copilot Chat, or another Copilot surface that can edit the workspace
 - PowerShell on Windows or Bash/Git Bash
@@ -90,8 +99,25 @@ Expected:
 
 ```text
 PASS: 5 pricing specifications
-VERIFIED GREEN: specifications pass and solution builds.
+Passed! - Commerce.Api.Tests
+Test Files  2 passed (2)
+VERIFIED GREEN: domain specs, API tests, React tests, production builds, and change scope pass.
 ```
+
+## Run the full-stack app
+
+From `demo`, use two terminals:
+
+```bash
+dotnet run --project src/Commerce.Api --urls http://localhost:5055
+```
+
+```bash
+npm ci --prefix web
+npm run dev --prefix web
+```
+
+Open the Vite URL (normally `http://localhost:5173`). See [`demo/README.md`](demo/README.md) for the architecture, test matrix, and Copilot customization examples.
 
 ## Reset for the next presentation
 
@@ -106,7 +132,7 @@ VERIFIED GREEN: specifications pass and solution builds.
 - `Practical-Demo-Runbook.md` — click-by-click demo and recovery
 - `Participant-Worksheet.md` — exercise and answer key
 - `Context-Card.md` — the reusable context packet
-- `demo/` — runnable C# example
+- `demo/` — runnable C# + ASP.NET Core + React/Vite example
 
 ## Key lesson
 

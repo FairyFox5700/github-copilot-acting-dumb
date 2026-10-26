@@ -1,7 +1,11 @@
 **/bin/
 **/obj/
+**/node_modules/
+**/dist/
 .vs/
 .vscode/
 .github/
+!context-kit/.github/
+!context-kit/.github/**
 *.user
 *.suo

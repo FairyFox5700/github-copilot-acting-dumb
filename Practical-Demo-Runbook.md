@@ -55,12 +55,14 @@ The model may fail, guess partly, or guess correctly. All three support the less
 2. Confirm these files appear:
    - `.github/copilot-instructions.md`
    - `.github/instructions/pricing.instructions.md`
+   - `.github/instructions/react.instructions.md`
+   - `.github/prompts/fix-pricing.prompt.md`
 3. Start a fresh chat.
 4. Open or attach the target, policy, and specs.
 5. Paste `prompts/engineered-prompt.txt`.
 6. Require diagnosis first.
 7. Inspect the diff before accepting.
-8. Accept only a production change in `PricingCalculator.cs`.
+8. Accept only a production change in `PricingCalculator.cs`; the API and React client are real consumers, not targets.
 9. Run `./scripts/Verify-Fixed.ps1`.
 
 ## Expected diff
@@ -69,6 +71,18 @@ The model may fail, guess partly, or guess correctly. All three support the less
 - Cap the discount with `Math.Min(..., 50m)`.
 - Round the final amount with `MidpointRounding.AwayFromZero`.
 - Do not change tests, project files, method signature, or dependencies.
+
+## Optional full-stack reveal
+
+Run the API and Vite client in two terminals:
+
+```powershell
+dotnet run --project src/Commerce.Api --urls http://localhost:5055
+npm ci --prefix web
+npm run dev --prefix web
+```
+
+Price a €400 basket with `SAVE20` before and after the fix. The visible result changes from the buggy €320.00 to the contract-aligned €350.00 without editing the API or React client. This demonstrates that the domain contract, rather than duplicated UI logic, owns the decision.
 
 ## Troubleshooting
 

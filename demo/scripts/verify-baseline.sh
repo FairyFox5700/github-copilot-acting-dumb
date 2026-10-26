@@ -12,4 +12,16 @@ if [ "$STATUS" -eq 0 ]; then
   printf 'ERROR: baseline unexpectedly passed.\n' >&2
   exit 1
 fi
-printf 'EXPECTED RED: baseline exposes the pricing defect.\n'
+EXPECTED_FAILURES=(
+  'FAILED: 3 pricing specification(s)'
+  'SAVE20 discount is capped at EUR 50'
+  'SAVE20 does not stack with category discount'
+  'currency result rounds away from zero'
+)
+for expected in "${EXPECTED_FAILURES[@]}"; do
+  if [[ "$OUTPUT" != *"$expected"* ]]; then
+    printf 'ERROR: baseline failed for an unexpected reason; missing: %s\n' "$expected" >&2
+    exit 1
+  fi
+done
+printf 'EXPECTED RED: baseline exposes exactly the three known pricing defects.\n'

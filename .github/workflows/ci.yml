@@ -13,6 +13,11 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: demo/web/package-lock.json
       - name: Confirm intentional red baseline
         working-directory: demo
         run: |
@@ -25,6 +30,7 @@ jobs:
           ./scripts/apply-known-fix.sh
           ./scripts/verify-fixed.sh
       - name: Restore baseline
+        if: always()
         working-directory: demo
         run: |
           ./scripts/reset-demo.sh

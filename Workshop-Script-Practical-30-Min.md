@@ -3,7 +3,7 @@
 **Audience:** Software engineers using GitHub Copilot  
 **Duration:** 30 minutes  
 **Observable outcome:** Participants can build and apply a six-part context packet that turns an ambiguous coding request into a contract-aligned, verified change.  
-**Demo scenario:** A .NET e-commerce promotion calculator passes the obvious case but violates cap, stacking, and rounding rules.
+**Demo scenario:** A C# pricing domain, ASP.NET Core API, and React/Vite client pass the obvious case but expose broken cap, stacking, and rounding rules.
 
 ## Presenter preflight — outside the clock
 
@@ -15,6 +15,7 @@
    - `docs/stale-promotion-notes.md`
    - `prompts/weak-prompt.txt`
    - `prompts/engineered-prompt.txt`
+   - `web/src/App.jsx`
 3. Open Copilot Chat in **Agent** mode.
 4. Run:
 
@@ -237,16 +238,25 @@ return Math.Round(finalAmount, 2, MidpointRounding.AwayFromZero);
 **Expected:**
 
 ```text
-[1/3] Focused pricing specifications
+[1/6] Focused pricing specifications
 PASS: 5 pricing specifications
 
-[2/3] Full solution build
+[2/6] API integration tests
+Passed! - Commerce.Api.Tests
+
+[3/6] React component and API-client tests
+Test Files  2 passed (2)
+
+[4/6] Full .NET solution build
 Build succeeded.
 
-[3/3] Changed-file scope
-src/Commerce.Pricing/PricingCalculator.cs
+[5/6] React production build
+✓ built
 
-VERIFIED GREEN: specifications pass and solution builds.
+[6/6] Changed-file scope
+demo/src/Commerce.Pricing/PricingCalculator.cs
+
+VERIFIED GREEN: domain specs, API tests, React tests, production builds, and change scope pass.
 ```
 
 **Say:**
@@ -299,6 +309,8 @@ Show:
 
 - `.github/copilot-instructions.md` for repository-wide facts and commands.
 - `.github/instructions/pricing.instructions.md` for C# pricing files.
+- `.github/instructions/react.instructions.md` for React client files.
+- `.github/prompts/fix-pricing.prompt.md` for a repeatable, task-specific agent request.
 - `prompts/engineered-prompt.txt` for the one-off task contract.
 
 **Say:**
