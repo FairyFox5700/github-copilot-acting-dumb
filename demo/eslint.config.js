@@ -16,6 +16,13 @@ export default tseslint.config(
     },
   },
   {
+    files: ['web/src/**/*.{js,jsx}'],
+    languageOptions: {
+      ecmaVersion: 2023,
+      globals: globals.browser,
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2023,

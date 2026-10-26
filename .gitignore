@@ -4,4 +4,6 @@ demo/test-results/
 demo/playwright-report/
 demo/.github/
 demo/.git/
+**/bin/
+**/obj/
 *.zip

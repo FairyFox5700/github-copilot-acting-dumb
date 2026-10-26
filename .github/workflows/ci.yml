@@ -21,6 +21,9 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: demo/package-lock.json
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - name: Confirm intentional red baseline

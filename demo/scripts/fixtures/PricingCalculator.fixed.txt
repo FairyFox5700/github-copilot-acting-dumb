@@ -1,0 +1,21 @@
+namespace Commerce.Pricing;
+
+public sealed class PricingCalculator
+{
+    public decimal ApplyPromotion(
+        decimal subtotal,
+        string promotionCode,
+        bool hasCategoryDiscount)
+    {
+        if (!string.Equals(promotionCode, "SAVE20", StringComparison.OrdinalIgnoreCase)
+            || hasCategoryDiscount)
+        {
+            return subtotal;
+        }
+
+        var discount = Math.Min(subtotal * 0.20m, 50m);
+        var finalAmount = subtotal - discount;
+
+        return Math.Round(finalAmount, 2, MidpointRounding.AwayFromZero);
+    }
+}

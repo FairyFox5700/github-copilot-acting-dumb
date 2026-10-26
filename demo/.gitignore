@@ -6,3 +6,5 @@ playwright-report/
 .vscode/
 /.github/
 *.log
+**/bin/
+**/obj/
