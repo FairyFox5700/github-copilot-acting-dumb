@@ -6,6 +6,9 @@ cd "$ROOT"
 dotnet run --project tests/Commerce.Pricing.Specs
 dotnet test tests/Commerce.Api.Tests --nologo
 dotnet build CommercePricing.slnx --nologo
+npm ci --prefix web
+npm test --prefix web
+npm run build --prefix web
 npm run test:run
 npm run lint
 npm run build

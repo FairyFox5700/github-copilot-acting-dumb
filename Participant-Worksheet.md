@@ -49,6 +49,19 @@ Name one plausible but obsolete source that should not influence the answer.
 
 > 
 
+## Enterprise extension: convert advice into controls
+
+For LATTE15, name one example for each row:
+
+| Question | Your answer |
+|---|---|
+| What guidance belongs in repository or path instructions? | |
+| What repeated procedure belongs in a prompt file or skill? | |
+| Which role should implement, and which independent role should review? | |
+| Does the task genuinely require MCP or another external capability? | |
+| Which non-negotiable checks belong in CI or platform policy? | |
+| Who owns the merge and production decision? | |
+
 ---
 
 # Answer key
@@ -86,6 +99,17 @@ Verification:
 
 Exclude superseded campaign drafts and legacy promotion notes.
 ```
+
+## Enterprise extension answer
+
+| Question | Recommended answer |
+|---|---|
+| Guidance | Universal test and security expectations in repository instructions; LATTE15 domain constraints in pricing path instructions |
+| Repeatable procedure | A scoped LATTE15 diagnosis prompt; promote to a skill only if scripts, templates, or conditional steps are needed |
+| Roles | A pricing implementer with edit/test tools; a separate read-only reviewer |
+| External capability | None for the local policy change; do not add MCP without a demonstrated external workflow |
+| Deterministic controls | Required test/lint/build checks, secret scanning, protected branch, protected production environment |
+| Human decision | Named reviewer owns merge; named environment approver owns production release |
 
 ## Self-check
 

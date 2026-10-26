@@ -32,8 +32,8 @@
 | 15:00–19:00 | Use prompt file in Plan mode | Diagnosis precedes editing |
 | 19:00–23:00 | Implement with specialist agent | One-file domain fix |
 | 23:00–26:00 | Verify independently | Tests, lint, build, browser, diff |
-| 26:00–28:00 | Show hook and review agent | Guidance differs from enforcement |
-| 28:00–30:00 | Participant decision and recap | Correct mode and mechanism selected |
+| 26:00–28:00 | Reveal the enterprise control stack | Guidance, capability, and enforcement separated |
+| 28:00–30:00 | Governance decision and recap | Production boundary and human owner named |
 
 **Total: 30 minutes.**
 
@@ -184,17 +184,19 @@ Expected:
 
 > “Generation proposes a change. The verification ladder earns the right to call it correct.”
 
-## 26:00–28:00 — Separate guidance, workflow, and enforcement
+## 26:00–28:00 — Reveal the enterprise control stack
 
-Show:
+Scroll to **Enterprise control stack** in the running app and open `docs/enterprise-engineering-practices.md` beside it.
 
-- prompt file — repeatable investigation;
-- Debugger agent — implementation specialist;
-- Reviewer agent — read-only verdict;
-- release skill — reusable procedure;
-- production hook — defense-in-depth denial for tested direct-publish command forms.
+Walk through the five layers:
 
-Test the hook:
+1. context governance — instructions and source authority;
+2. repeatable workflows — prompts and skills;
+3. least-privilege agency — separate implementer and reviewer roles;
+4. governed capabilities — MCP read-only first and plugins only when distribution is justified;
+5. deterministic controls — hooks and CI, backed by platform policy.
+
+Show the production hook as one defense-in-depth example:
 
 ```bash
 printf '%s' '{"toolName":"bash","toolArgs":{"command":"vercel --prod"}}' |
@@ -203,24 +205,31 @@ printf '%s' '{"toolName":"bash","toolArgs":{"command":"vercel --prod"}}' |
 
 Expected: `permissionDecision` is `deny`.
 
-## 28:00–30:00 — Choose the right mechanism
+**Say:**
 
-Ask participants to place each requirement:
+> “A prompt can shape judgment. It cannot grant trustworthy production authority. Enterprise safety comes from least-privilege identity, required CI, protected branches, environment approval, and an accountable human decision.”
 
-| Requirement | Mechanism |
-|---|---|
-| React + strict TypeScript | Repository instruction |
-| Pricing outside components | Path instruction + tests |
-| Diagnose before editing | Prompt file in Ask/Plan mode |
-| Specialist implementation | BrewCart Debugger agent |
-| Read-only post-change check | BrewCart Reviewer agent |
-| Repeatable release verification | Skill |
-| Never publish directly | Hook + permissions/CI approval |
-| Current issue and CI state | Narrow tools or MCP |
+Point out the status labels in the UI: MCP and plugins are a production pattern, not fake integrations added to make the demo look complete.
+
+## 28:00–30:00 — Make the governance decision
+
+Ask participants to place each requirement and name its owner:
+
+| Requirement | Mechanism | Enterprise owner or boundary |
+|---|---|---|
+| React + strict TypeScript | Repository instruction | Repository maintainers |
+| Pricing outside components | Path instruction + tests | Domain team + required CI |
+| Diagnose before editing | Prompt file in Ask/Plan mode | Workflow owner |
+| Specialist implementation | BrewCart Debugger agent | Tool-restricted engineering role |
+| Independent post-change check | BrewCart Reviewer agent | Reviewer who did not implement |
+| Repeatable release verification | Skill | Release engineering |
+| Block common direct publishing | Hook | Defense in depth, not production authority |
+| Authorize production release | Protected environment + restricted identity | Named human approver |
+| Reach current issue or CI state | Narrow MCP tools | Integration owner, read-only first |
 
 **Closing line:**
 
-> “Copilot was not missing JavaScript knowledge. It was missing the coffee shop’s authority, the correct workflow, and independent proof.”
+> “Copilot was not missing JavaScript knowledge. It was missing the coffee shop’s authority, a governed workflow, independent proof, and a production boundary outside the model.”
 
 ## Recovery
 

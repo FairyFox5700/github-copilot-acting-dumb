@@ -5,8 +5,15 @@ try {
     node "$PSScriptRoot/verify-baseline.mjs"
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-    $outputLines = & dotnet run --project tests/Commerce.Pricing.Specs 2>&1
-    $status = $LASTEXITCODE
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $outputLines = & dotnet run --project tests/Commerce.Pricing.Specs 2>&1
+        $status = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $previousPreference
+    }
     $outputText = $outputLines -join [Environment]::NewLine
     Write-Host $outputText
     if ($status -eq 0 -or -not $outputText.Contains('FAILED: 3 pricing specification(s)')) {

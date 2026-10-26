@@ -8,6 +8,12 @@ try {
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     dotnet build CommercePricing.slnx --nologo
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    npm ci --prefix web
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    npm test --prefix web
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    npm run build --prefix web
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     npm run test:run
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     npm run lint

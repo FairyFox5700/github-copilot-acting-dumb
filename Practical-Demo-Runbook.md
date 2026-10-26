@@ -45,9 +45,10 @@ The page shows:
 
 - the coffee order;
 - weak-context total €72.50 while in baseline;
-- the Agent playbook panel with five collaboration notes.
+- the Agent playbook panel with five collaboration notes;
+- the Enterprise control stack with five governance layers and explicit implemented-versus-recommended labels.
 
-The notes are short enough to work as interface guidance and detailed enough to support the workshop conversation.
+The playbook notes guide the individual interaction. The enterprise stack explains how an organization turns those habits into owned, versioned, least-privilege, auditable controls. Open `docs/enterprise-engineering-practices.md` for the detailed operating model and readiness checklist.
 
 ## Weak demo
 
@@ -101,7 +102,17 @@ printf '%s' '{"toolName":"bash","toolArgs":{"command":"npm run build"}}' | node 
 printf '%s' '{"toolName":"bash","toolArgs":{"command":"vercel --prod"}}' | node .github/hooks/block-production-deploy.mjs
 ```
 
-Expected: the tested direct production command is denied. Explain that shell command matching is defense in depth; missing production credentials, restricted identities, and CI approval are the actual deployment boundary.
+Expected: the tested direct production command is denied. Explain that shell command matching is defense in depth; missing production credentials, restricted identities, required CI, protected branches, and environment approval are the actual deployment boundary.
+
+## Enterprise showcase
+
+Scroll to **Enterprise control stack** and distinguish:
+
+- **implemented here:** instructions, prompt file, release skill, restricted specialist roles, tested hook, read-only CI, and human review;
+- **recommended for production:** protected branches, required status checks, protected environments, restricted deployment identities, secret scanning, audit retention, and rollback ownership;
+- **deliberately absent:** MCP and plugins, because this scenario requires no external capability or distributable extension bundle.
+
+Ask: “Who owns each layer, and what evidence proves it is active?” If the answer is only “the prompt says so,” the control is advisory rather than enforced.
 
 ## Troubleshooting
 

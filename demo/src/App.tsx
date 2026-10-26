@@ -1,5 +1,6 @@
 import { AgentPlaybook } from './components/AgentPlaybook';
 import { CheckoutPage } from './components/CheckoutPage';
+import { EnterpriseBlueprint } from './components/EnterpriseBlueprint';
 import './styles.css';
 
 export function App() {
@@ -41,6 +42,8 @@ export function App() {
         <CheckoutPage />
         <AgentPlaybook />
       </div>
+
+      <EnterpriseBlueprint />
 
       <footer>
         <span>Relevant context beats more context.</span>

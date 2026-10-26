@@ -27,3 +27,21 @@ Acceptance: discount €10; final total €85.
 Exclude: docs/legacy-promo-guide.md.
 Verify: focused tests → all tests → lint → build → browser → diff.
 ```
+
+## Enterprise control addendum
+
+A complete enterprise task contract also names:
+
+```text
+Owner + data classification + agent identity + allowed tools + approval boundary
++ audit evidence + rollback path
+```
+
+For BrewCart:
+
+- repository maintainers own instructions and source authority;
+- no customer or payment data enters the agent context;
+- implementer and reviewer roles are separate;
+- no production credentials are available to the coding agent;
+- required CI and a protected environment—not prompt prose—authorize release;
+- a named human owns merge and production approval.

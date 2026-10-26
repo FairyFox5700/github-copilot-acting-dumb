@@ -27,7 +27,7 @@ The pricing rule stays in one place. The API does validation and transport mappi
 
 ## Run the application
 
-Requirements: .NET SDK 10 and Node.js 24 or newer.
+Requirements: .NET SDK 10 and Node.js 22 or newer.
 
 Terminal 1, from `demo`:
 
@@ -78,6 +78,7 @@ From `demo`:
 ```bash
 dotnet run --project tests/Commerce.Pricing.Specs
 dotnet test tests/Commerce.Api.Tests
+npm ci --prefix web
 npm test --prefix web
 dotnet build CommercePricing.slnx --nologo
 npm run build --prefix web

@@ -5,7 +5,9 @@ const demo = resolve(import.meta.dirname, '..');
 const managed = [
   '.github/copilot-instructions.md',
   '.github/instructions/pricing.instructions.md',
+  '.github/instructions/react.instructions.md',
   '.github/instructions/react-ui.instructions.md',
+  '.github/prompts/fix-pricing.prompt.md',
   '.github/prompts/fix-checkout-context.prompt.md',
   '.github/agents/brewcart-debugger.agent.md',
   '.github/agents/brewcart-reviewer.agent.md',

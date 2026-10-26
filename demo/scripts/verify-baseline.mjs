@@ -45,6 +45,7 @@ try {
   ];
   const expectedPasses = [
     'embeds the agent best-practice notes in the app',
+    'shows the enterprise control stack and separates guidance from enforcement',
     'discounts an eligible beans order',
     'does not discount delivery',
     'denies a shell payload whose command cannot be inspected',
@@ -90,19 +91,19 @@ try {
     [...actualAssertions].sort().join('\n') === [...expectedAssertions].sort().join('\n');
   const exactStatistics =
     report.success === false &&
-    report.numTotalTestSuites === 8 &&
-    report.numPassedTestSuites === 4 &&
+    report.numTotalTestSuites === 10 &&
+    report.numPassedTestSuites === 6 &&
     report.numFailedTestSuites === 4 &&
     report.numPendingTestSuites === 0 &&
-    report.numTotalTests === 31 &&
-    report.numPassedTests === 28 &&
+    report.numTotalTests === 32 &&
+    report.numPassedTests === 29 &&
     report.numFailedTests === 3 &&
     report.numPendingTests === 0 &&
     report.numTodoTests === 0;
 
   if (!exactManifest || !exactStatistics) {
     console.error('BASELINE INVALID: test manifest or suite statistics changed.');
-    console.error('Expected statistics: 8 suites (4 passed, 4 failed), 31 tests (28 passed, 3 failed).');
+    console.error('Expected statistics: 10 suites (6 passed, 4 failed), 32 tests (29 passed, 3 failed).');
     console.error(`Observed statistics: ${JSON.stringify({
       totalSuites: report.numTotalTestSuites,
       passedSuites: report.numPassedTestSuites,

@@ -43,6 +43,20 @@ Run focused tests, the complete suite, lint, build, browser verification, and di
 
 The agent proposes. A human checks authority, scope, test integrity, security, and command evidence before approving the merge.
 
+## 7. Scale the workflow with enterprise controls
+
+Individual habits are not an enterprise operating model. Add ownership and enforcement around the agent:
+
+- version and review instruction files;
+- use prompt files and skills for repeatable workflows;
+- separate implementation from read-only review;
+- restrict agent and MCP tools to least privilege;
+- start external integrations read-only;
+- enforce required tests, protected branches, environment approval, and restricted deployment identities outside the model;
+- retain auditable evidence without logging secrets or customer data.
+
+See `enterprise-engineering-practices.md` for the adoption sequence and readiness checklist.
+
 ## BrewCart context packet
 
 ```text
