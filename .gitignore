@@ -1,6 +1,9 @@
+demo/node_modules/
+demo/dist/
+demo/test-results/
+demo/playwright-report/
+demo/.github/
+demo/.git/
 **/bin/
 **/obj/
-**/node_modules/
-**/dist/
-demo/.git/
 *.zip

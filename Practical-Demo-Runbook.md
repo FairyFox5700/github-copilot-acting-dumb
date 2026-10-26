@@ -1,103 +1,120 @@
-# Practical Demo Runbook
+# Practical demo runbook — BrewCart React
 
 ## Goal
 
-Demonstrate that GitHub Copilot’s apparent quality changes when the surrounding context system changes—even with the same model and target file.
+Demonstrate that the same Copilot model produces more reliable work when the task has authority, scope, acceptance values, appropriate mode selection, and independent verification.
 
 ## IDE setup
 
-1. In VS Code, choose **File → Open Folder**.
-2. Select `Copilot Context Engineering Workshop - Dumb to Deliberate/demo`.
-3. Open **View → Terminal**.
-4. Open **View → Chat** and select **Agent** mode.
-5. Pin the Explorer, Chat, editor, and terminal so the audience can see all four.
+1. Open the repository’s `demo` folder as the VS Code workspace root.
+2. Run `npm ci` and `npx playwright install chromium`.
+3. Pin Explorer, editor, Chat, and terminal.
+4. Open:
+   - `src/domain/discountPolicy.ts`
+   - `tests/discountPolicy.test.ts`
+   - `docs/pricing-rules.md`
+   - `docs/legacy-promo-guide.md`
+   - `docs/agent-best-practices.md`
+5. Open Copilot Chat.
 
-## Baseline state
-
-PowerShell:
+## Baseline
 
 ```powershell
 ./scripts/Reset-Demo.ps1
 ./scripts/Verify-Baseline.ps1
 ```
 
-Bash:
+Recognizable result:
+
+- focused beans-only test passes;
+- mixed coffee + gift-card test fails;
+- gift-card-only test fails;
+- checkout UI test reports €22.50 instead of €10 and €72.50 instead of €85.
+
+If complete verification passes, stop and reset. Do not present from an unknown state.
+
+## Show the app
+
+Run:
 
 ```bash
-./scripts/reset-demo.sh
-./scripts/verify-baseline.sh
+npm run dev
 ```
 
-Recognizable result: three failed specifications. If the baseline passes, stop and reset again; do not present from an unknown state.
+The page shows:
+
+- the coffee order;
+- weak-context total €72.50 while in baseline;
+- the Agent playbook panel with five collaboration notes.
+
+The notes are short enough to work as interface guidance and detailed enough to support the workshop conversation.
 
 ## Weak demo
 
-1. Start a new chat.
-2. Open only `src/Commerce.Pricing/PricingCalculator.cs`.
+1. Start a new Copilot chat.
+2. Open only `src/domain/discountPolicy.ts`.
 3. Paste `prompts/weak-prompt.txt`.
-4. Ask for explanation before edits.
-5. Record which items the response omits:
-   - EUR 50 cap;
-   - category-discount non-stacking;
-   - exact rounding;
-   - authoritative source;
-   - verification commands;
-   - change boundary.
-6. Reject/undo edits.
+4. Ask Copilot to explain its proposed change before accepting anything.
+5. Record whether it identifies:
+   - the current pricing policy;
+   - the obsolete guide;
+   - the mixed-order €10 discount;
+   - the €85 final total;
+   - the prohibition on test weakening;
+   - complete verification.
+6. Reject or undo edits.
 
-### Interpretation
-
-The model may fail, guess partly, or guess correctly. All three support the lesson: the request provides no evidence chain, so the answer is not reliably grounded.
+The model may fail, partly guess, or guess correctly. All three support the lesson: the request has no evidence chain, so the result is not reliably grounded.
 
 ## Engineered demo
 
 1. Run `./scripts/Apply-Context.ps1`.
-2. Confirm these files appear:
-   - `.github/copilot-instructions.md`
-   - `.github/instructions/pricing.instructions.md`
-   - `.github/instructions/react.instructions.md`
-   - `.github/prompts/fix-pricing.prompt.md`
-3. Start a fresh chat.
-4. Open or attach the target, policy, and specs.
-5. Paste `prompts/engineered-prompt.txt`.
-6. Require diagnosis first.
-7. Inspect the diff before accepting.
-8. Accept only a production change in `PricingCalculator.cs`; the API and React client are real consumers, not targets.
+2. Confirm `.github` now contains instructions, a prompt, three agents, a release skill, and a hook.
+3. Start a fresh chat so weak assumptions do not remain in history.
+4. Select **Plan** mode or **BrewCart Debugger**.
+5. Attach the target, tests, and current policy.
+6. Invoke `.github/prompts/fix-checkout-context.prompt.md`.
+7. Require this order: reproduce → classify sources → diagnose → propose file scope → edit → verify.
+8. Accept only the change in `src/domain/discountPolicy.ts`.
 9. Run `./scripts/Verify-Fixed.ps1`.
 
-## Expected diff
+## Expected production change
 
-- Add category-discount early return.
-- Cap the discount with `Math.Min(..., 50m)`.
-- Round the final amount with `MidpointRounding.AwayFromZero`.
-- Do not change tests, project files, method signature, or dependencies.
+Replace a non-delivery subtotal with a subtotal filtered by `promotion.eligibleCategories`. Keep integer cents and the exported function signature.
 
-## Optional full-stack reveal
+Do not change React components, tests, dependencies, docs, or public types.
 
-Run the API and Vite client in two terminals:
+## Specialized modes to demonstrate
 
-```powershell
-dotnet run --project src/Commerce.Api --urls http://localhost:5055
-npm ci --prefix web
-npm run dev --prefix web
+- **Ask:** compare `pricing-rules.md` with `legacy-promo-guide.md`; no edits.
+- **Plan:** return diagnosis, authority, file scope, and verification plan.
+- **BrewCart Debugger:** implement the approved change.
+- **BrewCart Reviewer:** perform read-only post-change review and return PASS or REVIEW.
+- **BrewCart Workshop Coach:** explain the same flow through predictions and participant checkpoints.
+
+## Production hook check
+
+After applying context:
+
+```bash
+printf '%s' '{"toolName":"bash","toolArgs":{"command":"npm run build"}}' | node .github/hooks/block-production-deploy.mjs
+printf '%s' '{"toolName":"bash","toolArgs":{"command":"vercel --prod"}}' | node .github/hooks/block-production-deploy.mjs
 ```
 
-Price a €400 basket with `SAVE20` before and after the fix. The visible result changes from the buggy €320.00 to the contract-aligned €350.00 without editing the API or React client. This demonstrates that the domain contract, rather than duplicated UI logic, owns the decision.
+Expected: the tested direct production command is denied. Explain that shell command matching is defense in depth; missing production credentials, restricted identities, and CI approval are the actual deployment boundary.
 
 ## Troubleshooting
 
 | Symptom | Cause | Recovery |
 |---|---|---|
-| Copilot already knows the policy during weak demo | Reused chat or open files leaked context | Start a fresh chat; close policy/spec tabs |
-| Weak demo produces the exact correct fix | Model guessed from familiar patterns | Ask which artifact proves the rules; emphasize reliability, not failure theater |
-| Copilot edits tests | Scope boundary was ignored | Reject test edits; restate “production-only”; use known fix if time-boxed |
-| Copilot changes multiple files | Prompt or tool scope is too broad | Reject diff; attach exact target and constraints |
-| Agent cannot find instructions | Files not applied or client support differs | Run `Apply-Context.ps1`; open instruction files explicitly |
-| Network/model latency blocks demo | Live dependency | Run `Apply-KnownFix.ps1` and continue verification |
-| Build cannot find SDK | .NET 10 missing | Use prepared output screenshots or install the correct SDK before delivery |
-| Bash scripts fail on Windows paths | Not running Git Bash | Use the PowerShell scripts |
+| Weak chat already knows the policy | Reused chat or open policy tabs | Start a new chat and close authoritative files |
+| Weak prompt guesses correctly | Familiar pattern | Ask which artifact proves the rule |
+| Copilot edits tests | Scope or authority not respected | Reject test changes; invoke BrewCart Debugger explicitly |
+| Prompt or agent is not discovered | Client support or file location differs | Open the file explicitly and paste its body into Plan mode |
+| Browser is unavailable | Playwright not installed | Run unit, lint, and build checks; use the known screenshot |
+| Network/model latency blocks demo | Live dependency | Apply the known fix and continue verification |
 
-## Deterministic recovery
+## Complete recovery sequence
 
 ```powershell
 ./scripts/Reset-Demo.ps1
@@ -109,4 +126,4 @@ Price a €400 basket with `SAVE20` before and after the fix. The visible result
 ./scripts/Verify-Baseline.ps1
 ```
 
-The final command must return the workshop to the visible red starting state.
+Finish in the intentional red state for the next presentation.

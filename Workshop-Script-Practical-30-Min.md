@@ -2,378 +2,233 @@
 
 **Audience:** Software engineers using GitHub Copilot  
 **Duration:** 30 minutes  
-**Observable outcome:** Participants can build and apply a six-part context packet that turns an ambiguous coding request into a contract-aligned, verified change.  
-**Demo scenario:** A C# pricing domain, ASP.NET Core API, and React/Vite client pass the obvious case but expose broken cap, stacking, and rounding rules.
+**Application:** BrewCart, a React and TypeScript coffee-shop checkout
+**Outcome:** Participants can turn a vague defect request into an authoritative, scoped, mode-aware, and independently verified agent workflow.
 
 ## Presenter preflight — outside the clock
 
-1. Open the folder `Copilot Context Engineering Workshop - Dumb to Deliberate/demo` in VS Code.
-2. Open these tabs in order:
-   - `src/Commerce.Pricing/PricingCalculator.cs`
-   - `tests/Commerce.Pricing.Specs/Program.cs`
-   - `docs/promotion-policy.md`
-   - `docs/stale-promotion-notes.md`
-   - `prompts/weak-prompt.txt`
-   - `prompts/engineered-prompt.txt`
-   - `web/src/App.jsx`
-3. Open Copilot Chat in **Agent** mode.
-4. Run:
+1. Open the repository’s `demo` folder in VS Code.
+2. Run `npm ci` and `npx playwright install chromium`.
+3. Open `src/domain/discountPolicy.ts`, the pricing tests, current policy, legacy guide, and agent notes.
+4. Reset and verify the intentional red state:
 
 ```powershell
 ./scripts/Reset-Demo.ps1
 ./scripts/Verify-Baseline.ps1
 ```
 
-5. Confirm three failures: cap, non-stacking, and rounding.
-6. Start a fresh Copilot chat for the weak demo.
-7. Keep the fallback command ready:
-
-```powershell
-./scripts/Apply-KnownFix.ps1
-./scripts/Verify-Fixed.ps1
-```
+5. Confirm the focused beans-only test passes and complete verification fails.
+6. Keep the known-fix commands ready.
 
 ## Run of show
 
 | Time | Segment | Observable result |
 |---|---|---|
-| 00:00–02:00 | Reproduce and establish stakes | Three visible failures |
-| 02:00–04:00 | Minimal mental model | “Context is a dependency graph” |
-| 04:00–07:00 | Evidence/authority map | Contract, target, tests, and stale note classified |
-| 07:00–10:00 | Weak Copilot attempt | Missing authority and verification become visible |
-| 10:00–18:00 | Context-engineered attempt | Minimal contract-aligned production change |
-| 18:00–22:00 | Verification ladder | Specs pass, build passes, diff scope is narrow |
-| 22:00–26:00 | Participant exercise | Teams write a six-part context packet |
-| 26:00–28:00 | Durable guidance | Rules placed in repository/path scope |
-| 28:00–30:00 | Recovery and recap | Reset demonstrated; takeaway stated |
+| 00:00–02:00 | Reveal the €12.50 loss | Wrong €22.50 discount is visible |
+| 02:00–05:00 | Teach the context packet | Target, authority, constraints, proof |
+| 05:00–08:00 | Map authority and stale evidence | Current policy beats legacy guide |
+| 08:00–11:00 | Run the weak request | Copilot must guess the contract |
+| 11:00–15:00 | Apply scoped instructions | Durable rules move to proper scope |
+| 15:00–19:00 | Use prompt file in Plan mode | Diagnosis precedes editing |
+| 19:00–23:00 | Implement with specialist agent | One-file domain fix |
+| 23:00–26:00 | Verify independently | Tests, lint, build, browser, diff |
+| 26:00–28:00 | Show hook and review agent | Guidance differs from enforcement |
+| 28:00–30:00 | Participant decision and recap | Correct mode and mechanism selected |
 
 **Total: 30 minutes.**
 
-## 00:00–02:00 — Reproduce the visible failure
+## 00:00–02:00 — Reveal the loss
 
 **Say:**
 
-> “We often say Copilot is dumb when it gives a plausible but wrong change. For the next 30 minutes, we will treat that as an engineering diagnosis. The model is not missing clever wording—it is missing a reliable information system.”
+> “A customer bought €40 of coffee beans and a €50 gift card. BEANS25 should save €10. The checkout saved €22.50. The TypeScript compiled, the visible test passed, and the shop lost €12.50.”
 
-**Presenter does:**
+Open `src/domain/discountPolicy.ts` and show that the baseline discounts every non-delivery row.
 
-- In the VS Code terminal, from `demo`, run:
+Run:
 
-```powershell
-./scripts/Reset-Demo.ps1
-./scripts/Verify-Baseline.ps1
-```
-
-**Expected:**
-
-```text
-FAILED: 3 pricing specification(s)
- - SAVE20 discount is capped at EUR 50: expected 350, got 320.00
- - SAVE20 does not stack with category discount: expected 100, got 80.00
- - currency result rounds away from zero: expected 79.99, got 79.9920
-EXPECTED RED: baseline exposes the pricing defect.
+```bash
+npm run test:focused
+npm run test:run
 ```
 
 **Ask:**
 
-> “If I only tell an agent ‘fix the discount bug,’ which of these business rules can it know with authority?”
+> “If the focused test is green, what evidence says the business behavior is correct?”
 
 **Transition:**
 
-> “Before prompting, we need a model for the evidence the agent requires.”
+> “Copilot knows percentages. It does not automatically know what this coffee shop is allowed to discount.”
 
-## 02:00–04:00 — Teach one mental model
+## 02:00–05:00 — Teach the minimum context packet
+
+Open `../Context-Card.md`.
 
 **Say:**
 
-> “Context engineering is dependency injection for reasoning. The agent needs the target to change, an authoritative contract, constraints, executable acceptance criteria, and verification. Anything stale must be excluded or labeled. More context is not the goal; decision-relevant context is.”
+> “Reliable agent work needs a goal, target, authority, constraints, acceptance values, excluded stale evidence, and verification. More text is not the goal; decision-relevant context is.”
 
-**Presenter does:**
-
-- Open `../Context-Card.md`.
-- Point to the formula:
+Point to:
 
 ```text
-Task + target + authority + constraints + acceptance criteria + verification
+Goal + target + authority + constraints + acceptance + exclusion + verification
 ```
 
-**Participants do:**
+Ask participants which element their last disappointing request omitted.
 
-> “Write down which element your last disappointing Copilot request omitted.”
+## 05:00–08:00 — Map authority
 
-**Transition:**
+Classify:
 
-> “Now we will classify the repository before asking the model to act.”
-
-## 04:00–07:00 — Map evidence and authority
-
-**Presenter does:**
-
-Open the four files and label them aloud:
-
-1. `PricingCalculator.cs` — **target**, not authority.
-2. `Program.cs` — **executable acceptance criteria**.
-3. `promotion-policy.md` — **authoritative contract**.
-4. `stale-promotion-notes.md` — **conflicting historical noise**.
+1. `discountPolicy.ts` — target, not authority.
+2. `discountPolicy.test.ts` — executable acceptance criteria.
+3. `pricing-rules.md` — current authority.
+4. `legacy-promo-guide.md` — obsolete but relevant-looking evidence.
+5. `agent-best-practices.md` — reusable collaboration guidance.
 
 **Say:**
 
-> “The current implementation is evidence of what the code does, not proof of what the business wants. Tests are executable claims. The policy is the authority. The stale note is dangerous precisely because it is relevant-looking.”
+> “The implementation proves what code does, not what the business wants. Relevant is not the same as authoritative.”
 
-**Ask:**
+## 08:00–11:00 — Run the weak request
 
-> “Would attaching the whole repository improve this task?”
-
-Expected answer: **No.** It would add undifferentiated context and conflicting evidence.
-
-**Transition:**
-
-> “Let’s deliberately omit this structure and see what a weak request asks Copilot to guess.”
-
-## 07:00–10:00 — Run the weak approach
-
-**Presenter does:**
-
-1. Start a fresh Copilot chat.
-2. Open only `PricingCalculator.cs`.
-3. Paste the exact contents of `prompts/weak-prompt.txt`:
+Start a fresh Agent-mode chat, open only the target, and paste:
 
 ```text
-Fix the discount bug in `PricingCalculator.cs`.
+Fix the BEANS25 discount bug in `src/domain/discountPolicy.ts`.
 ```
 
-4. Ask Copilot to explain its proposed change before accepting anything.
+Ask Copilot to explain its plan before editing. Do not depend on one exact wrong answer.
 
 **Say:**
 
-> “The weak prompt does not identify the failing behavior, the policy, the stale evidence, the scope boundary, or the proof of completion. Copilot must infer the specification from the buggy code. A fluent guess is still a guess.”
+> “A correct guess is still a guess. Which repository artifact proves the proposed behavior?”
 
-**Expected screen state:**
+Reject or undo edits.
 
-Any response that lacks one or more of cap, non-stacking, exact rounding, narrow scope, and verification demonstrates the lesson. Do not depend on one exact wrong answer.
+## 11:00–15:00 — Apply scoped instructions
 
-**If Copilot happens to guess correctly:**
-
-Say:
-
-> “It produced a plausible answer, but it cannot show why that answer is authoritative. Correct by luck is not reliable engineering.”
-
-Then ask:
-
-```text
-Which repository artifact proves those business rules are correct?
-```
-
-The weak chat has not been given one.
-
-**Transition:**
-
-> “We will now change the information architecture, not the model.”
-
-## 10:00–18:00 — Run the engineered approach
-
-**Presenter does:**
-
-1. Reject or undo any weak-demo edits.
-2. Apply durable instructions:
+Run:
 
 ```powershell
 ./scripts/Apply-Context.ps1
 ```
 
-3. Open `.github/copilot-instructions.md` and `.github/instructions/pricing.instructions.md`.
-4. Explain the split:
-   - repository instructions: authority, scope, commands;
-   - path instructions: money and pricing conventions.
-5. Start a **fresh** Copilot chat so the weak conversation does not contaminate the comparison.
-6. Open/attach:
-   - `src/Commerce.Pricing/PricingCalculator.cs`
-   - `tests/Commerce.Pricing.Specs/Program.cs`
-   - `docs/promotion-policy.md`
-7. Paste `prompts/engineered-prompt.txt`.
-8. Require diagnosis before edit.
-9. Review the proposed diff. Accept only a change in `PricingCalculator.cs`.
+Open:
+
+- `.github/copilot-instructions.md` — stable React/TypeScript rules;
+- `.github/instructions/pricing.instructions.md` — domain authority and constraints;
+- `.github/instructions/react-ui.instructions.md` — presentation boundaries.
 
 **Say:**
 
-> “Notice that the prompt names not only what to include, but what to exclude. It also separates diagnosis, change, and proof. The agent now has an authority chain and a stopping condition.”
+> “Keep shared facts small and always available. Scope specialized rules to the files they govern. Put deterministic safety outside the model’s discretion.”
 
-**Expected minimal implementation:**
+Show the Agent playbook panel in the running app. Explain that short notes are embedded where the participant uses them, while detailed guidance lives in a maintained document.
 
-```csharp
-if (!string.Equals(promotionCode, "SAVE20", StringComparison.OrdinalIgnoreCase)
-    || hasCategoryDiscount)
-{
-    return subtotal;
-}
+## 15:00–19:00 — Plan before editing
 
-var discount = Math.Min(subtotal * 0.20m, 50m);
-var finalAmount = subtotal - discount;
-return Math.Round(finalAmount, 2, MidpointRounding.AwayFromZero);
+Start a fresh chat. Use Plan mode or select BrewCart Debugger. Attach the target, test, and current policy. Invoke:
+
+```text
+.github/prompts/fix-checkout-context.prompt.md
 ```
 
-**If the model diverges:**
+Require:
 
-1. Do not improvise.
-2. Run:
+1. reproduction;
+2. source classification;
+3. first incorrect decision;
+4. proposed file scope;
+5. verification plan.
+
+Expected scope: `src/domain/discountPolicy.ts` only.
+
+## 19:00–23:00 — Implement with BrewCart Debugger
+
+Approve the plan and switch to Agent mode with BrewCart Debugger.
+
+Expected change:
+
+```ts
+const eligibleSubtotalCents = items
+  .filter((item) => promotion.eligibleCategories.includes(item.category))
+  .reduce((subtotal, item) => subtotal + item.unitPriceCents * item.quantity, 0);
+```
+
+Reject React-component calculations, test weakening, dependency changes, or unrelated formatting.
+
+Fallback:
 
 ```powershell
 ./scripts/Apply-KnownFix.ps1
 ```
 
-3. Continue to verification and explain that deterministic fallback preserves the learning objective.
+## 23:00–26:00 — Verify independently
 
-**Transition:**
-
-> “A better-looking diff is not the result. Executable evidence is the result.”
-
-## 18:00–22:00 — Run the verification ladder
-
-**Presenter does:**
+Run:
 
 ```powershell
 ./scripts/Verify-Fixed.ps1
 ```
 
-**Expected:**
+Expected:
 
-```text
-[1/6] Focused pricing specifications
-PASS: 5 pricing specifications
-
-[2/6] API integration tests
-Passed! - Commerce.Api.Tests
-
-[3/6] React component and API-client tests
-Test Files  2 passed (2)
-
-[4/6] Full .NET solution build
-Build succeeded.
-
-[5/6] React production build
-✓ built
-
-[6/6] Changed-file scope
-demo/src/Commerce.Pricing/PricingCalculator.cs
-
-VERIFIED GREEN: domain specs, API tests, React tests, production builds, and change scope pass.
-```
+- all Vitest tests pass;
+- ESLint reports no errors;
+- TypeScript and Vite build;
+- Playwright sees €10 discount and €85 total;
+- the final diff stays within the approved scope.
 
 **Say:**
 
-> “The verification ladder catches two common agent failures: changing tests to make the problem disappear and broadening the diff beyond the task.”
+> “Generation proposes a change. The verification ladder earns the right to call it correct.”
 
-**Ask:**
-
-> “What would you add in production?”
-
-Expected answers: real unit-test framework, full test suite, static analysis, security checks, CI, and review.
-
-**Transition:**
-
-> “Now you will design the context packet yourselves.”
-
-## 22:00–26:00 — Participant exercise
-
-**Participants do:**
-
-Open `Participant-Worksheet.md` and spend three minutes writing a context packet for the variant:
-
-> “A `VIP15` promotion gives 15% off, is limited to authenticated loyalty members, and must not apply to gift cards.”
-
-They must provide:
-
-1. Task.
-2. Target.
-3. Authority.
-4. Constraints.
-5. Acceptance criteria.
-6. Verification.
-7. One excluded context item.
-
-At minute 25, reveal the answer key.
-
-**Say:**
-
-> “A good packet makes uncertainty explicit. If the authoritative policy is missing, the correct agent action is to ask or stop—not invent.”
-
-**Transition:**
-
-> “One-off context solves today’s task. Durable context prevents tomorrow’s repetition.”
-
-## 26:00–28:00 — Place durable guidance correctly
-
-**Presenter does:**
+## 26:00–28:00 — Separate guidance, workflow, and enforcement
 
 Show:
 
-- `.github/copilot-instructions.md` for repository-wide facts and commands.
-- `.github/instructions/pricing.instructions.md` for C# pricing files.
-- `.github/instructions/react.instructions.md` for React client files.
-- `.github/prompts/fix-pricing.prompt.md` for a repeatable, task-specific agent request.
-- `prompts/engineered-prompt.txt` for the one-off task contract.
+- prompt file — repeatable investigation;
+- Debugger agent — implementation specialist;
+- Reviewer agent — read-only verdict;
+- release skill — reusable procedure;
+- production hook — defense-in-depth denial for tested direct-publish command forms.
 
-**Say:**
+Test the hook:
 
-> “Do not put the whole task in always-on instructions. Persist stable facts and conventions. Keep case-specific evidence in the prompt. If a multi-step workflow repeats, promote it to a skill. If a check must always run, use a hook or CI—not prose.”
+```bash
+printf '%s' '{"toolName":"bash","toolArgs":{"command":"vercel --prod"}}' |
+  node .github/hooks/block-production-deploy.mjs
+```
 
-**Transition:**
+Expected: `permissionDecision` is `deny`.
 
-> “Let’s prove that this workshop is recoverable, then close with one sentence.”
+## 28:00–30:00 — Choose the right mechanism
 
-## 28:00–30:00 — Recovery and recap
+Ask participants to place each requirement:
 
-**Presenter does:**
+| Requirement | Mechanism |
+|---|---|
+| React + strict TypeScript | Repository instruction |
+| Pricing outside components | Path instruction + tests |
+| Diagnose before editing | Prompt file in Ask/Plan mode |
+| Specialist implementation | BrewCart Debugger agent |
+| Read-only post-change check | BrewCart Reviewer agent |
+| Repeatable release verification | Skill |
+| Never publish directly | Hook + permissions/CI approval |
+| Current issue and CI state | Narrow tools or MCP |
+
+**Closing line:**
+
+> “Copilot was not missing JavaScript knowledge. It was missing the coffee shop’s authority, the correct workflow, and independent proof.”
+
+## Recovery
+
+Restore the presentation baseline:
 
 ```powershell
 ./scripts/Reset-Demo.ps1
 ./scripts/Verify-Baseline.ps1
 ```
 
-**Expected:** the three intentional failures return.
-
-**Say:**
-
-> “The takeaway: when Copilot looks dumb, inspect the context contract before changing the model or writing a longer prompt. Give it selected authority, scope, and executable proof. Better context is not more text; it is better evidence architecture.”
-
-**Final audience question:**
-
-> “Which one repeated task in your team should become a context packet this week?”
-
-## Verification ladder
-
-1. Focused specification runner.
-2. Full solution build.
-3. Changed-file scope.
-4. Context/source audit.
-5. Reset to the intentional baseline.
-
-## Presenter appendix
-
-### Exact weak input
-
-`demo/prompts/weak-prompt.txt`
-
-### Exact engineered input
-
-`demo/prompts/engineered-prompt.txt`
-
-### Known-good recovery
-
-```powershell
-./scripts/Apply-KnownFix.ps1
-./scripts/Verify-Fixed.ps1
-```
-
-### Fresh-chat reset
-
-Always create a new Copilot chat between weak and engineered attempts. Otherwise prior answers become hidden context and invalidate the comparison.
-
-### Take-home checklist
-
-- Did I name the target?
-- Did I identify the authority?
-- Did I exclude stale or conflicting evidence?
-- Did I state constraints and forbidden changes?
-- Did I provide executable acceptance criteria?
-- Did I require verification and a scope report?
+If model behavior diverges, use the known fix and preserve the lesson through deterministic verification.

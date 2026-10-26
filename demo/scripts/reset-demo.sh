@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-case "${OSTYPE:-}" in msys*|cygwin*) ROOT="$(cygpath -w "$ROOT")" ;; esac
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cp "$ROOT/scripts/fixtures/discountPolicy.baseline.ts" "$ROOT/src/domain/discountPolicy.ts"
+touch "$ROOT/src/domain/discountPolicy.ts"
 cp "$ROOT/scripts/fixtures/PricingCalculator.baseline.txt" "$ROOT/src/Commerce.Pricing/PricingCalculator.cs"
 touch "$ROOT/src/Commerce.Pricing/PricingCalculator.cs"
-rm -rf "$ROOT/.github"
-dotnet clean "$ROOT/CommercePricing.slnx" --nologo >/dev/null
-printf 'Reset complete: buggy pricing code restored; Copilot context files removed.\n'
+(cd "$ROOT" && node scripts/clear-context.mjs)
+echo 'RESET: BrewCart and the C# pricing API restored to their intentional red baselines.'

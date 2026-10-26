@@ -1,87 +1,99 @@
 # From “Copilot Is Dumb” to a Reliable Agent
 
-A 30-minute, hands-on GitHub Copilot workshop about context engineering.
+A 30-minute, hands-on GitHub Copilot context-engineering workshop built around **BrewCart**, a runnable React and TypeScript coffee-shop checkout.
 
 ## Observable outcome
 
-Participants will turn an ambiguous “fix the bug” request into a context packet that identifies the target, authoritative contract, constraints, executable acceptance criteria, excluded stale evidence, and verification commands.
+Participants turn a vague “fix the discount bug” request into an authoritative, scoped, and verified agent workflow using custom instructions, a prompt file, specialized agents, a reusable skill, a safety hook, tests, and human review.
 
-## Scenario
+## The defect
 
-A real full-stack e-commerce slice—C# pricing domain, ASP.NET Core API, and React/Vite client—looks plausible but violates three business rules:
+The order contains:
 
-- the SAVE20 discount is capped at EUR 50;
-- it cannot stack with a category discount;
-- final currency values use two-decimal, away-from-zero rounding.
+| Line | Amount | BEANS25 eligible? |
+|---|---:|---:|
+| House Blend beans × 2 | €40.00 | Yes |
+| BrewCart gift card | €50.00 | No |
+| Delivery | €5.00 | No |
 
-The repository also contains stale notes describing rejected behavior. The demo first gives Copilot a weak prompt, then provides engineered context and durable repository instructions. The browser makes the broken contract visible while domain specs, API integration tests, and React tests provide a verification ladder.
+The intentional baseline discounts the full €90 merchandise subtotal:
 
-```mermaid
-flowchart LR
-    React[React + Vite] -->|POST /api/pricing/quote| API[ASP.NET Core API]
-    API --> Pricing[C# pricing domain]
-    Policy[Promotion policy] -. authority .-> Pricing
-    Tests[Domain + API + UI tests] -. proof .-> Pricing
+```text
+Wrong discount: €22.50
+Wrong total:    €72.50
+```
+
+The current pricing contract discounts beans only:
+
+```text
+Correct discount: €10.00
+Correct total:    €85.00
+Store loss fixed: €12.50
 ```
 
 ## Requirements
 
-- .NET SDK 10
-- Node.js 24+
+- Node.js 22+
+- npm
 - Git
-- VS Code with GitHub Copilot Chat, or another Copilot surface that can edit the workspace
+- VS Code with GitHub Copilot Chat
 - PowerShell on Windows or Bash/Git Bash
+- Chromium for Playwright (`npx playwright install chromium`)
 
 ## Start in the intentional red state
 
 ```powershell
 cd demo
+npm ci
+npx playwright install chromium
 ./scripts/Reset-Demo.ps1
 ./scripts/Verify-Baseline.ps1
 ```
 
-Bash/Git Bash:
+Bash:
 
 ```bash
 cd demo
+npm ci
+npx playwright install chromium
 ./scripts/reset-demo.sh
 ./scripts/verify-baseline.sh
 ```
 
-Expected: three failed pricing specifications.
+Expected: the beans-only focused test passes, while complete verification exposes gift-card over-discounting.
 
 ## Live comparison
 
 ### Weak request
 
-Paste `demo/prompts/weak-prompt.txt` into a **fresh** Copilot chat:
+Open only `src/domain/discountPolicy.ts`, start a fresh Copilot chat, and paste `prompts/weak-prompt.txt`:
 
 ```text
-Fix the discount bug in `PricingCalculator.cs`.
+Fix the BEANS25 discount bug in `src/domain/discountPolicy.ts`.
 ```
 
-The task gives no authority, no cap rule, no stacking rule, no rounding rule, and no verification contract. Treat the response as a diagnosis of the prompt—not a contest to make the model fail in one exact way.
+The request gives Copilot no authority, excluded legacy source, acceptance values, or verification contract.
 
 ### Engineered request
 
-1. Apply durable context:
+1. Apply the context kit:
 
 ```powershell
 ./scripts/Apply-Context.ps1
 ```
 
 2. Open a fresh Copilot chat.
-3. Attach or open:
-   - `src/Commerce.Pricing/PricingCalculator.cs`
-   - `tests/Commerce.Pricing.Specs/Program.cs`
-   - `docs/promotion-policy.md`
-4. Paste `prompts/engineered-prompt.txt`.
-5. Review the proposed diff before accepting.
-6. Run the verification ladder.
+3. Use **Plan** mode or select **BrewCart Debugger**.
+4. Open or attach:
+   - `src/domain/discountPolicy.ts`
+   - `tests/discountPolicy.test.ts`
+   - `docs/pricing-rules.md`
+5. Invoke `.github/prompts/fix-checkout-context.prompt.md` or paste `prompts/engineered-prompt.txt`.
+6. Require diagnosis before edits.
+7. Review the proposed diff before accepting.
+8. Run the verification ladder.
 
 ## Deterministic fallback
-
-If Copilot diverges or network access fails:
 
 ```powershell
 ./scripts/Apply-KnownFix.ps1
@@ -98,26 +110,47 @@ Bash:
 Expected:
 
 ```text
-PASS: 5 pricing specifications
-Passed! - Commerce.Api.Tests
-Test Files  2 passed (2)
-VERIFIED GREEN: domain specs, API tests, React tests, production builds, and change scope pass.
+Tests: all passed
+ESLint: 0 errors
+Vite build: completed
+Playwright: €10 discount and €85 total
+VERIFIED GREEN
 ```
 
-## Run the full-stack app
+## Best-practice notes are embedded naturally
 
-From `demo`, use two terminals:
+The running app includes an **Agent playbook** beside the checkout rather than hiding every lesson in workshop prose. The notes are also maintained in `docs/agent-best-practices.md`:
 
-```bash
-dotnet run --project src/Commerce.Api --urls http://localhost:5055
-```
+1. Inspect before editing.
+2. Identify the authoritative source.
+3. Plan the smallest coherent change.
+4. Run tests before declaring success.
+5. Keep a human review of the final diff.
 
-```bash
-npm ci --prefix web
-npm run dev --prefix web
-```
+## Copilot customization included
 
-Open the Vite URL (normally `http://localhost:5173`). See [`demo/README.md`](demo/README.md) for the architecture, test matrix, and Copilot customization examples.
+The context kit contains:
+
+- `.github/copilot-instructions.md` — stable repository guidance;
+- `.github/instructions/*.instructions.md` — pricing and React path-specific rules;
+- `.github/prompts/fix-checkout-context.prompt.md` — repeatable diagnosis task;
+- `.github/agents/brewcart-debugger.agent.md` — implementation specialist;
+- `.github/agents/brewcart-reviewer.agent.md` — read-only reviewer;
+- `.github/agents/brewcart-workshop-coach.agent.md` — teaching mode;
+- `.github/skills/brewcart-release/SKILL.md` — release-verification procedure;
+- `.github/hooks/production-safety.json` — defense-in-depth check for common direct production-publish commands.
+
+The hook is deliberately tested but is not the security boundary. Production credentials remain outside the agent environment, and CI permissions and approval rules enforce deployment authority.
+
+Copilot feature support and frontmatter vary among IDE, CLI, coding agent, and GitHub.com surfaces. Verify the selected client before presenting.
+
+## Workshop files
+
+- `Workshop-Script-Practical-30-Min.md` — timed presenter script
+- `Practical-Demo-Runbook.md` — click-by-click execution and recovery
+- `Participant-Worksheet.md` — exercise and answer key
+- `Context-Card.md` — minimum authoritative context packet
+- `demo/` — runnable React application and intentional red/verified green states
 
 ## Reset for the next presentation
 
@@ -126,21 +159,15 @@ Open the Vite URL (normally `http://localhost:5173`). See [`demo/README.md`](dem
 ./scripts/Verify-Baseline.ps1
 ```
 
-## Workshop files
-
-- `Workshop-Script-Practical-30-Min.md` — verbatim presenter script
-- `Practical-Demo-Runbook.md` — click-by-click demo and recovery
-- `Participant-Worksheet.md` — exercise and answer key
-- `Context-Card.md` — the reusable context packet
-- `demo/` — runnable C# + ASP.NET Core + React/Vite example
-
 ## Key lesson
 
-Apparent agent “intelligence” is often a property of the context system around the model. Better context is not more text. It is selected, authoritative, scoped, and verifiable evidence.
+Copilot already knows React and percentage arithmetic. It does not automatically know BrewCart’s current business authority, rejected legacy rule, desired file scope, or proof of completion. Reliable work comes from the context and verification system around the model.
 
 ## References
 
 - GitHub Copilot customization cheat sheet: https://docs.github.com/en/copilot/reference/customization-cheat-sheet
 - Custom instructions: https://docs.github.com/en/copilot/concepts/prompting-and-context/custom-instructions
 - Prompt files: https://docs.github.com/en/copilot/concepts/prompting-and-context/prompt-files
+- Custom agents: https://docs.github.com/en/copilot/reference/custom-agents-configuration
 - Agent skills: https://docs.github.com/en/copilot/concepts/agents/about-agent-skills
+- Hooks: https://docs.github.com/en/copilot/reference/hooks-reference

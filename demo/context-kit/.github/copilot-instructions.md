@@ -1,28 +1,11 @@
-# Commerce pricing repository instructions
+# BrewCart repository contract
 
-## Authority and scope
-
-- Treat `docs/promotion-policy.md` as the authoritative pricing contract.
-- Treat `docs/stale-promotion-notes.md` as rejected historical context. Do not implement it.
-- Preserve public contracts unless the task explicitly authorizes a breaking change.
-- Make the smallest production change that satisfies the acceptance criteria. Never weaken tests to make a failure disappear.
-
-## Architecture
-
-- `src/Commerce.Pricing` owns business rules and contains no web concerns.
-- `src/Commerce.Api` exposes the pricing domain over HTTP.
-- `web` is a React + Vite client and communicates through `/api`.
-- Tests are consumers of the contract, not the source of business policy.
-
-## Verification
-
-From `demo`, use this ladder:
-
-1. `dotnet run --project tests/Commerce.Pricing.Specs`
-2. `dotnet test tests/Commerce.Api.Tests`
-3. `npm test --prefix web`
-4. `dotnet build CommercePricing.slnx --nologo`
-5. `npm run build --prefix web`
-6. `git diff --name-only`
-
-Report the evidence used, root cause, files changed, and command results.
+- The primary demo uses React, TypeScript, and Vite; `web/` is the separate React client for the C# pricing API.
+- Keep TypeScript strict mode enabled.
+- Treat ESLint errors and TypeScript errors as build failures.
+- The C# pricing API and domain target .NET 10; use `decimal` for money and follow `docs/promotion-policy.md`.
+- Keep pricing rules in the domain and cover API behavior with integration tests.
+- Never commit secrets, customer data, or payment credentials.
+- Preserve exported component props and domain APIs unless a breaking change is approved.
+- Inspect the target, closest tests, and current contract before editing.
+- Report the commands actually run; do not claim success from a plausible diff.
